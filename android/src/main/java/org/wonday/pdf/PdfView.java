@@ -12,6 +12,8 @@ import java.io.File;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.SizeF;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,7 +107,11 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
         TopChangeEvent tce = new TopChangeEvent(surfaceId, getId(), event);
 
         if (dispatcher != null) {
-            dispatcher.dispatchEvent(tce);
+            // At the time of this, RN 0.77 support was merged into master, but not yet released.
+            // onLoadComplete was also not getting called, and the screen just kept loading.
+            // https://github.com/wonday/react-native-pdf/issues/899
+            // https://github.com/wonday/react-native-pdf/pull/926
+            new Handler(Looper.getMainLooper()).postDelayed(() -> dispatcher.dispatchEvent(tce), 10);
         }
 
 //        ReactContext reactContext = (ReactContext)this.getContext();
